@@ -1,0 +1,111 @@
+### Health Check
+GET http://localhost:8080/health
+Content-Type: application/json
+
+###
+
+### Create Payment Session
+POST http://localhost:8080/api/v1/payments/create-session
+Content-Type: application/json
+
+{
+  "order_id": "order_001_{{ $timestamp }}",
+  "amount": 100.50,
+  "currency": "INR",
+  "customer_id": "customer_001",
+  "customer_name": "John Doe",
+  "customer_email": "john.doe@example.com",
+  "customer_phone": "+919876543210",
+  "description": "Test payment for order",
+  "return_url": "https://your-domain.com/payment/success",
+  "notify_url": "https://your-domain.com/api/v1/webhook/cashfree"
+}
+
+###
+
+### Verify Payment
+POST http://localhost:8080/api/v1/payments/verify
+Content-Type: application/json
+
+{
+  "order_id": "order_001_1672531200"
+}
+
+###
+
+### Get Payment Details
+GET http://localhost:8080/api/v1/payments/order_001_1672531200
+Content-Type: application/json
+
+###
+
+### Refund Payment
+POST http://localhost:8080/api/v1/payments/order_001_1672531200/refund
+Content-Type: application/json
+
+{
+  "amount": 50.25,
+  "reason": "Customer requested refund"
+}
+
+###
+
+### Cancel Payment
+POST http://localhost:8080/api/v1/payments/order_001_1672531200/cancel
+Content-Type: application/json
+
+###
+
+### Create Split Settlement
+POST http://localhost:8080/api/v1/payments/order_001_1672531200/split
+Content-Type: application/json
+
+{
+  "splits": [
+    {
+      "vendor_id": "vendor_001",
+      "amount": 70.00
+    },
+    {
+      "vendor_id": "vendor_002",
+      "percentage": 30.0
+    }
+  ]
+}
+
+###
+
+### Get Settlement Details
+GET http://localhost:8080/api/v1/settlements/settlement_001
+Content-Type: application/json
+
+###
+
+### Get Refund Details
+GET http://localhost:8080/api/v1/refunds/refund_001
+Content-Type: application/json
+
+###
+
+### Get All Payments (with pagination)
+GET http://localhost:8080/api/v1/payments?limit=10&offset=0
+Content-Type: application/json
+
+###
+
+### Webhook Test (This would be called by Cashfree)
+POST http://localhost:8080/api/v1/webhook/cashfree
+Content-Type: application/json
+x-webhook-signature: test_signature
+x-webhook-timestamp: 1672531200
+
+{
+  "type": "PAYMENT_SUCCESS_WEBHOOK",
+  "data": {
+    "order_id": "order_001_1672531200",
+    "cf_payment_id": "12345",
+    "payment_method": "upi",
+    "payment_amount": 100.50,
+    "payment_time": "2023-01-01T10:00:00Z"
+  }
+}
